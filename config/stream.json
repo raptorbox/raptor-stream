@@ -1,0 +1,10 @@
+{
+    "port": ":10092",
+    "influxdb": {
+        "host": "http://influxdb:8086",
+        "database": "streams",
+        "username": "raptor",
+        "password": "raptor",
+        "precision": "us"
+    }
+}
