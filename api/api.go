@@ -18,16 +18,16 @@ func Write(r []*models.Record) *errors.HTTPError {
 }
 
 //Delete records
-func Delete(deviceID string, streamID string) error {
+func Delete(deviceID string, streamID string) *errors.HTTPError {
 	panic(fmt.Errorf("Not implemented"))
 }
 
 //Search records
-func Search(q models.DataQuery) error {
+func Search(q models.DataQuery) *errors.HTTPError {
 	panic(fmt.Errorf("Not implemented"))
 }
 
 //List records
-func List(from int, to int) error {
+func List(from int, to int) *errors.HTTPError {
 	panic(fmt.Errorf("Not implemented"))
 }
