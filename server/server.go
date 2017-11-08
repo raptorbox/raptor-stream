@@ -60,7 +60,7 @@ func Start(port string) error {
 			r = append(r, record)
 		}
 
-		err = api.Write(r)
+		err = api.Save(r)
 		if err != nil {
 			c.JSON(400, gin.H{
 				"message": err.Error(),
@@ -74,14 +74,31 @@ func Start(port string) error {
 
 	// drop data
 	r.DELETE("/:objectId", func(c *gin.Context) {
-		err := api.Delete(c.Param("objectId"), "")
+		f := api.RecordQuery{
+			DeviceID: c.Param("objectId"),
+		}
+		err := api.Delete(f)
 		if err != nil {
-			c.JSON(err.code, err.message)
+			c.JSON(err.Code, gin.H{
+				"message": err.Message,
+				"code":    err.Code,
+			})
 			return
 		}
 	})
 	r.DELETE("/:objectId/:streamId", func(c *gin.Context) {
-		log.Fatalf("Not implemented DELETE /:objectId/:streamId")
+		f := api.RecordQuery{
+			DeviceID: c.Param("objectId"),
+			StreamID: c.Param("streamId"),
+		}
+		err := api.Delete(f)
+		if err != nil {
+			c.JSON(err.Code, gin.H{
+				"message": err.Message,
+				"code":    err.Code,
+			})
+			return
+		}
 	})
 
 	// list paged data

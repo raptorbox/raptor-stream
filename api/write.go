@@ -1,4 +1,4 @@
-package influx
+package api
 
 import (
 	"fmt"
@@ -9,33 +9,8 @@ import (
 	"github.com/spf13/viper"
 )
 
-var client influx.Client
-
-//Record to store
-type Record struct {
-	Name   string
-	Tags   map[string]string
-	Values []interface{}
-	Fields map[string]interface{}
-	Time   time.Time
-}
-
-//Client return a influxdb client instance
-func Client() error {
-	if client != nil {
-		return nil
-	}
-	var err error
-	client, err = influx.NewHTTPClient(influx.HTTPConfig{
-		Addr:     viper.GetString("influxdb.host"),
-		Username: viper.GetString("influxdb.username"),
-		Password: viper.GetString("influxdb.password"),
-	})
-	return err
-}
-
-// Write a batch of records
-func Write(r []*models.Record) error {
+// WriteRecord a batch of records
+func WriteRecord(r []*models.Record) error {
 
 	if len(r) == 0 {
 		return nil
@@ -62,14 +37,18 @@ func Write(r []*models.Record) error {
 			return fmt.Errorf("Stream is empty")
 		}
 
+		fields := record.Channels
+
+		if record.UserID != "" {
+			fields["userId"] = record.UserID
+		}
+		fields["streamId"] = record.StreamID
+		fields["deviceId"] = record.DeviceID
+
 		point, err1 := influx.NewPoint(
 			record.DeviceID+"-"+record.GetStream().Name,
-			map[string]string{
-				"streamId": record.StreamID,
-				"deviceId": record.DeviceID,
-				"userId":   record.UserID,
-			},
-			record.Channels,
+			map[string]string{},
+			fields,
 			time.Unix(record.Timestamp, 0),
 		)
 		if err1 != nil {
